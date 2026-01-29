@@ -21,8 +21,6 @@ Uses NetworkX to create a directed graph.
 Matplotlib draws the network and highlights the path found by each algorithm.
 Each algorithm’s path is shown in a different color: DFS (blue), BFS (green), A* (red).
 Edge weights are labeled for clarity."""
-import matplotlib.pyplot as plt
-import networkx as nx
 from collections import deque
 import heapq
 
@@ -57,7 +55,7 @@ heuristic = {
 start = "Glogow"
 goal = "Plock"
 
-# ---------- DFS, BFS, A* ----------
+# ---------- DFS ----------
 def dfs(graph, start, goal):
     stack = [(start, [start])]
     visited = set()
@@ -72,6 +70,7 @@ def dfs(graph, start, goal):
             stack.append((neighbor, path + [neighbor]))
     return None
 
+# ---------- BFS ----------
 def bfs(graph, start, goal):
     queue = deque([(start, [start])])
     visited = set()
@@ -86,6 +85,7 @@ def bfs(graph, start, goal):
             queue.append((neighbor, path + [neighbor]))
     return None
 
+# ---------- A* ----------
 def a_star(graph, start, goal, h):
     pq = [(h[start], 0, start, [start])]
     visited = set()
@@ -103,36 +103,11 @@ def a_star(graph, start, goal, h):
                 heapq.heappush(pq, (new_f, new_g, neighbor, path + [neighbor]))
     return None
 
+# ---------- Run Algorithms ----------
 dfs_path = dfs(graph, start, goal)
 bfs_path = bfs(graph, start, goal)
 astar_path = a_star(graph, start, goal, heuristic)
 
-# ---------- NetworkX Graph ----------
-G = nx.DiGraph()
-for node, neighbors in graph.items():
-    for neighbor, weight in neighbors:
-        G.add_edge(node, neighbor, weight=weight)
-
-# Use Kamada-Kawai layout for better spacing
-pos = nx.kamada_kawai_layout(G)
-
-# ---------- Function to draw individual path ----------
-def draw_path(path, color, title):
-    plt.figure(figsize=(14, 10))
-    nx.draw(G, pos, with_labels=True, node_size=800, node_color='lightblue', arrowsize=20)
-    nx.draw_networkx_edges(G, pos, edge_color='gray', arrows=True)
-    # Draw edge weights
-    edge_labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    # Highlight the path
-    if path:
-        edges = list(zip(path, path[1:]))
-        nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=color, width=4, arrows=True)
-    plt.title(title, fontsize=16)
-    plt.axis('off')
-    plt.show()
-
-# ---------- Draw each algorithm on a separate page ----------
-draw_path(dfs_path, 'blue', 'DFS Path (Blue) from Glogow → Plock')
-draw_path(bfs_path, 'green', 'BFS Path (Green) from Glogow → Plock')
-draw_path(astar_path, 'red', 'A* Path (Red) from Glogow → Plock')
+print("DFS Path:", dfs_path)
+print("BFS Path:", bfs_path)
+print("A* Path:", astar_path)
