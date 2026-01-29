@@ -1,3 +1,15 @@
+
+"""You are given a list of tile multipliers.
+Each tile has a number on it.
+When you remove (burst) a tile, you earn points equal to:
+left tile value X current tile value Xright tile value
+After removing a tile, the remaining tiles become neighbors.
+Your goal is to remove all tiles in an order that gives the maximum total points.
+"""
+
+"""This problem is solved using interval dynamic programming,
+ where we maximize points by considering each tile as the last removal in a subarray 
+ and combining optimal solutions of left and right subproblems."""
 def max_points(tile_multipliers):
     nums = [1] + tile_multipliers + [1]
     n = len(nums)

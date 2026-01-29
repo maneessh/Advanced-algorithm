@@ -1,3 +1,14 @@
+"""
+The task is to simulate an emergency network of cities connected by roads. 
+Users can add cities and roads, simulate city failures, and visualize the network.
+ The goal is to maintain connectivity among all active cities while minimizing 
+ the total distance of roads used, even when some cities fail.
+"""
+
+"""The solution represents cities as nodes and roads as weighted edges in a graph. 
+It allows interactive addition of cities and roads via a Tkinter GUI. City failures are simulated by marking nodes inactive. 
+To ensure minimal connectivity among active cities, Kruskal’s algorithm computes the Minimum Spanning Tree,
+ which is displayed visually. This approach combines graph algorithms with an interactive visualization for real-time emergency network planning."""
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 from collections import defaultdict

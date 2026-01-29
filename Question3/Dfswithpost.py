@@ -1,3 +1,15 @@
+"""Problem Understanding
+You are given a binary tree where each node represents a location.
+You want to place the minimum number of service centers such that:
+A service center placed at a node can cover:
+The node itself
+Its parent
+Its immediate children"""
+
+"""This problem is solved using greedy DFS with postorder traversal,
+ where each node is assigned one of three states (needs service, has service center, covered)
+   to ensure minimum placement of service centers."""
+
 from collections import deque
 
 class TreeNode:

@@ -1,3 +1,6 @@
+
+""" problem : Find an approximately shortest route visiting all cities once
+ (Traveling Salesman Problem) using heuristic optimization."""
 import random
 import math
 
