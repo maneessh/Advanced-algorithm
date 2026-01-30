@@ -1,3 +1,11 @@
+""" Problem is Given a set of points (sensor locations), find the optimal hub location
+ that minimizes the total distance to all points. """
+
+"""Using an iterative weighted average algorithm (Weiszfeld's algorithm).
+started from the centroid, iteratively updated the hub using inverse-distance weights,
+ and stopped when the hub movement became negligible. Finally, computed the sum of 
+ distances from this hub to all sensors."""
+
 import math
 
 """calculating the total distance from the hub (x,y) to all the sensor point"""

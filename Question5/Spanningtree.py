@@ -14,10 +14,11 @@ from tkinter import simpledialog, messagebox
 from collections import defaultdict
 
 
+
 class Graph:
     def __init__(self):
-        self.nodes = {}        # city_name -> {x, y, active}
-        self.edges = []        # (weight, city1, city2)
+        self.nodes = {}          # city -> {x, y, active}
+        self.edges = []          # (weight, city1, city2)
         self.adj = defaultdict(list)
 
     def add_city(self, name, x, y):
@@ -35,16 +36,16 @@ class Graph:
         return True
 
     def deactivate_city(self, name):
-        if name not in self.nodes:
-            return
-        self.nodes[name]["active"] = False
-        self.adj[name] = []
+        if name in self.nodes:
+            self.nodes[name]["active"] = False
 
+   
     def mst_kruskal(self):
-        parent = {n: n for n in self.nodes}
+        parent = {n: n for n in self.nodes if self.nodes[n]["active"]}
 
         def find(x):
             while parent[x] != x:
+                parent[x] = parent[parent[x]]
                 x = parent[x]
             return x
 
@@ -86,6 +87,7 @@ class EmergencyGUI:
         self.cx = self.cy = None
         self.root.mainloop()
 
+    
     def save_click(self, e):
         self.cx, self.cy = e.x, e.y
 
@@ -97,10 +99,11 @@ class EmergencyGUI:
         if not name:
             return
         if self.graph.add_city(name, self.cx, self.cy):
-            self.draw_city(name)
+            self.redraw()
         else:
             messagebox.showerror("Error", "City already exists")
 
+    
     def add_road(self):
         a = simpledialog.askstring("Road", "First city:")
         b = simpledialog.askstring("Road", "Second city:")
@@ -109,32 +112,57 @@ class EmergencyGUI:
         w = simpledialog.askfloat("Weight", "Distance:")
         if w is None:
             return
-        self.graph.add_road(a, b, w)
-        self.draw_road(a, b)
+        if self.graph.add_road(a, b, w):
+            self.redraw()
 
+    
     def show_mst(self):
+        self.redraw()
         for a, b in self.graph.mst_kruskal():
-            self.draw_road(a, b, "green", 3)
+            self.draw_road(a, b, color="green", width=4)
 
     def fail_city(self):
         name = simpledialog.askstring("Failure", "City to deactivate:")
         if name in self.graph.nodes:
             self.graph.deactivate_city(name)
+            self.redraw()
+
+   
+    def redraw(self):
+        self.canvas.delete("all")
+
+        # Draw roads
+        for w, a, b in self.graph.edges:
+            self.draw_road(a, b)
+
+        # Draw cities
+        for name in self.graph.nodes:
             self.draw_city(name)
 
- 
     def draw_city(self, name):
         n = self.graph.nodes[name]
         x, y = n["x"], n["y"]
         color = "gray" if not n["active"] else "blue"
-        self.canvas.create_oval(x-self.R, y-self.R, x+self.R, y+self.R, fill=color)
+        self.canvas.create_oval(
+            x - self.R, y - self.R, x + self.R, y + self.R, fill=color
+        )
         self.canvas.create_text(x, y, text=name, fill="white")
 
-    def draw_road(self, a, b, color="black", w=2):
+    def draw_road(self, a, b, color="black", width=2):
+        if not self.graph.nodes[a]["active"] or not self.graph.nodes[b]["active"]:
+            color = "gray"
+
         x1, y1 = self.graph.nodes[a]["x"], self.graph.nodes[a]["y"]
         x2, y2 = self.graph.nodes[b]["x"], self.graph.nodes[b]["y"]
-        self.canvas.create_line(x1, y1, x2, y2, fill=color, width=w)
 
+        self.canvas.create_line(x1, y1, x2, y2, fill=color, width=width)
+
+        # Draw weight at midpoint
+        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+        for w, c1, c2 in self.graph.edges:
+            if (c1 == a and c2 == b) or (c1 == b and c2 == a):
+                self.canvas.create_text(mx, my, text=str(w), fill="red")
+                break
 
 
 EmergencyGUI()
